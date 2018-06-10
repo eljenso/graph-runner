@@ -115,4 +115,4 @@ const allCards = []
   .concat(pack_win)
   .concat(pack_wla);
 
-exports.allCards = allCards;
+exports.ALL_CARDS = allCards;

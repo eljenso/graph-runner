@@ -2,7 +2,8 @@ const sideType = `
   type Side {
     code: String!
     name: String!
-    factions: [Faction]
+    factions(nameIncludes: String, isMini: Boolean): [Faction]
+    cards: [Card]
   }
 `;
 
@@ -13,6 +14,7 @@ const typeType = `
     name: String!
     position: Int
     side: Side!
+    cards: [Card]
   }
 `;
 
@@ -25,7 +27,7 @@ const packType = `
     name: String!
     position: Int!
     size: Int!
-    cards: [Card!]!
+    cards(titleIncludes: String): [Card!]!
   }
 `;
 
@@ -47,6 +49,7 @@ const factionType = `
     isMini: Boolean
     name: String!
     side: Side!
+    cards: [Card!]!
   }
 `;
 
@@ -82,17 +85,17 @@ const cardType = `
 const queryType = `
   type Query {
     cycle(code: String!): Cycle
-    cycles: [Cycle]
+    cycles(nameIncludes: String): [Cycle]
     side(code: String!): Side
-    sides: [Side]
-    type(code: String!): Type
+    sides(nameIncludes: String): [Side]
+    type(code: String, isSubtype: Boolean, nameIncludes: String): Type
     types: [Type]
     card(code: String!): Card
-    cards: [Card]
+    cards(titleIncludes: String): [Card]
     pack(code: String!): Pack
-    packs: [Pack]
+    packs(nameIncludes: String): [Pack]
     faction(code: String!): Faction
-    factions: [Faction]
+    factions(nameIncludes: String, isMini: Boolean): [Faction]
   }
 `;
 
