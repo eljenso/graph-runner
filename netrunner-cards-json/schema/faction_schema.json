@@ -1,0 +1,30 @@
+{
+    "additionalProperties": false,
+    "properties": {
+        "code": {
+            "minLength": 1,
+            "type": "string"
+        },
+        "color": {
+            "maxLength": 6,
+            "minLength": 6,
+            "type": "string"
+        },
+        "is_mini": {
+            "type": "boolean"
+        },
+        "name": {
+            "minLength": 1,
+            "type": "string"
+        },
+        "side_code": {
+            "minLength": 1,
+            "type": "string"
+        }
+    },
+    "required": [
+        "code",
+        "name"
+    ],
+    "type": "object"
+}
