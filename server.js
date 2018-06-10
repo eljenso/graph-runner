@@ -2,16 +2,11 @@ const Hapi = require("hapi");
 const { graphqlHapi, graphiqlHapi } = require("apollo-server-hapi");
 const { makeExecutableSchema } = require("graphql-tools");
 
+const { typeDefs } = require("./types");
+const { resolvers } = require("./resolvers");
+
 const HOST = "localhost";
 const PORT = 3000;
-
-const typeDefs = `
-  type Runner {
-    id: String!
-    name: String!
-  }
-`;
-const resolvers = {};
 
 const schema = makeExecutableSchema({
   typeDefs,
