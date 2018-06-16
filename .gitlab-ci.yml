@@ -22,9 +22,10 @@ build-master:
 build:
   stage: build
   script:
-    - docker build --pull -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" .
-  except:
-    - master
+    - docker build --pull -t "$CI_REGISTRY_IMAGE:latest" .
+    - docker push "$CI_REGISTRY_IMAGE:latest"
+  only:
+    - develop
   tags:
     - docker
     - privileged
