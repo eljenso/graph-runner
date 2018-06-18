@@ -8,24 +8,21 @@ services:
 before_script:
   - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
 
-build-master:
+Build & push docker container:
   stage: build
   script:
     - docker build --pull -t "$CI_REGISTRY_IMAGE" .
     - docker push "$CI_REGISTRY_IMAGE"
-  only:
-    - master
   tags:
     - docker
     - privileged
 
-build:
-  stage: build
+Deploy container on rancher:
+  stage: deploy
+  image: cdrx/rancher-gitlab-deploy
   script:
-    - docker build --pull -t "$CI_REGISTRY_IMAGE:latest" .
-    - docker push "$CI_REGISTRY_IMAGE:latest"
-  only:
-    - develop
+    - upgrade --stack graph-runner --service graph-runner
   tags:
     - docker
-    - privileged
+  only:
+    - develop
