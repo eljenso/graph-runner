@@ -5,11 +5,12 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@gitlab.comtip.net:55/netrunner/graph-runner.git"
+    "url": "git@github.com:eljenso/graph-runner.git"
   },
   "author": "",
   "license": "ISC",
