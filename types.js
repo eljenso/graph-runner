@@ -1,4 +1,4 @@
-const sideType = `
+const SideType = `
   type Side {
     code: String!
     name: String!
@@ -7,7 +7,7 @@ const sideType = `
   }
 `;
 
-const typeType = `
+const TypeType = `
   type Type {
     code: String!
     isSubtype: Boolean
@@ -18,7 +18,7 @@ const typeType = `
   }
 `;
 
-const packType = `
+const PackType = `
   type Pack {
     code: String!
     cycle: Cycle!
@@ -31,7 +31,7 @@ const packType = `
   }
 `;
 
-const cycleType = `
+const CycleType = `
   type Cycle {
     code: String!
     name: String!
@@ -42,7 +42,7 @@ const cycleType = `
   }
 `;
 
-const factionType = `
+const FactionType = `
   type Faction {
     code: String!
     color: String
@@ -53,36 +53,110 @@ const factionType = `
   }
 `;
 
-const cardType = `
-  type Card {
-    advancementCost: Int
-    agendaPoints: Int
-    baseLink: Int
+const CardInterface = `
+  interface ICard {
     code: String!
-    cost: Int
-    deckLimit: Int!
     faction: Faction!
-    factionCost: Int
     flavor: String
     illustrator: String
-    influenceLimit: Int
     keywords: String
-    memoryCost: Int
-    minimumDeckSize: Int
     pack: Pack!
     position: Int!
     quantity: Int!
     side: Side!
-    strength: Int
     text: String
     title: String!
-    trashCost: Int
     type: Type!
     uniqueness: Boolean!
   }
 `;
 
-const queryType = `
+const AgendaType = `
+  type Agenda implements ICard {
+    advancementCost: Int!
+    agendaPoints: Int!
+    deckLimit: Int!
+  }
+`;
+const AssetType = `
+  type Asset implements ICard {
+    cost: Int!
+    factionCost: Int!
+    deckLimit: Int!
+    trashCost: Int
+  }
+`;
+const EventType = `
+  type Event implements ICard {
+    cost: Int!
+    factionCost: Int!
+    deckLimit: Int!
+  }
+`;
+const HardwareType = `
+  type Hardware implements ICard {
+    cost: Int!
+    factionCost: Int!
+    deckLimit: Int!
+  }
+`;
+const IceType = `
+  type Ice implements ICard {
+    cost: Int!
+    factionCost: Int!
+    deckLimit: Int!
+    strength: Int
+    trashCost: Int
+  }
+`;
+const IcebreakerType = `
+  type Icebreaker implements ICard {
+    cost: Int!
+    factionCost: Int!
+    deckLimit: Int!
+    strength: Int
+  }
+`;
+const IdentityType = `
+  type Identity implements ICard {
+    baseLink: Int
+    influenceLimit: Int!
+    minimumDeckSize: Int!
+  }
+`;
+const OperationType = `
+  type Operation implements ICard {
+    cost: Int!
+    factionCost: Int!
+    deckLimit: Int!
+    trashCost: Int
+  }
+`;
+const ProgramType = `
+  type Program implements ICard {
+    cost: Int!
+    memoryCost: Int!
+    factionCost: Int!
+    deckLimit: Int!
+  }
+`;
+const ResourceType = `
+  type Resource implements ICard {
+    cost: Int!
+    factionCost: Int!
+    deckLimit: Int!
+  }
+`;
+const UpgradeType = `
+  type Upgrade implements ICard {
+    cost: Int!
+    factionCost: Int!
+    deckLimit: Int!
+    trashCost: Int
+  }
+`;
+
+const QueryType = `
   type Query {
     cycle(code: String!): Cycle
     cycles(nameIncludes: String): [Cycle]
@@ -90,8 +164,8 @@ const queryType = `
     sides(nameIncludes: String): [Side]
     type(code: String, isSubtype: Boolean, nameIncludes: String): Type
     types: [Type]
-    card(code: String!): Card
-    cards(titleIncludes: String): [Card]
+    card(code: String!): ICard
+    cards(titleIncludes: String): [ICard]
     pack(code: String!): Pack
     packs(nameIncludes: String): [Pack]
     faction(code: String!): Faction
@@ -100,12 +174,12 @@ const queryType = `
 `;
 
 exports.typeDefs = `
-  ${sideType}
-  ${typeType}
-  ${packType}
-  ${cycleType}
-  ${factionType}
-  ${cardType}
+  ${SideType}
+  ${TypeType}
+  ${PackType}
+  ${CycleType}
+  ${FactionType}
+  ${CardInterface}
 
-  ${queryType}
+  ${QueryType}
 `;
