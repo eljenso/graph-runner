@@ -3,7 +3,7 @@ const SideType = `
     code: String!
     name: String!
     factions(nameIncludes: String, isMini: Boolean): [Faction]
-    cards: [Card]
+    cards: [ICard]
   }
 `;
 
@@ -14,7 +14,7 @@ const TypeType = `
     name: String!
     position: Int
     side: Side!
-    cards: [Card]
+    cards: [ICard]
   }
 `;
 
@@ -27,7 +27,7 @@ const PackType = `
     name: String!
     position: Int!
     size: Int!
-    cards(titleIncludes: String): [Card!]!
+    cards(titleIncludes: String): [ICard!]!
   }
 `;
 
@@ -49,7 +49,7 @@ const FactionType = `
     isMini: Boolean
     name: String!
     side: Side!
-    cards: [Card!]!
+    cards: [ICard!]!
   }
 `;
 
@@ -180,6 +180,18 @@ exports.typeDefs = `
   ${CycleType}
   ${FactionType}
   ${CardInterface}
+
+  ${AgendaType}
+  ${AssetType}
+  ${EventType}
+  ${HardwareType}
+  ${IceType}
+  ${IcebreakerType}
+  ${IdentityType}
+  ${OperationType}
+  ${ResourceType}
+  ${ProgramType}
+  ${UpgradeType}
 
   ${QueryType}
 `;
