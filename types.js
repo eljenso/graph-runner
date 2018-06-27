@@ -3,7 +3,7 @@ const SideType = `
     code: String!
     name: String!
     factions(nameIncludes: String, isMini: Boolean): [Faction]
-    cards: [ICard]
+    cards(filter: FilterCards): [ICard]
   }
 `;
 
@@ -14,7 +14,7 @@ const TypeType = `
     name: String!
     position: Int
     side: Side!
-    cards: [ICard]
+    cards(filter: FilterCards): [ICard]
   }
 `;
 
@@ -27,7 +27,7 @@ const PackType = `
     name: String!
     position: Int!
     size: Int!
-    cards(titleIncludes: String): [ICard!]!
+    cards(filter: FilterCards): [ICard!]!
   }
 `;
 
@@ -49,24 +49,59 @@ const FactionType = `
     isMini: Boolean
     name: String!
     side: Side!
-    cards: [ICard!]!
+    cards(filter: FilterCards): [ICard!]!
+  }
+`;
+
+const FilterCardsInput = `
+  input FilterCards {
+    textIncludes: String
+    flavorIncludes: String
+    subtype: String
+    cost: Int
+    minCost: Int
+    maxCost: Int
+    agendaPoints: Int
+    minAgendaPoints: Int
+    maxAgendaPoints: Int
+    factionCost: Int
+    minFactionCost: Int
+    maxFactionCost: Int
+    strength: Int
+    minStrength: Int
+    maxStrength: Int
+    advancementCost: Int
+    minAdvancementCost: Int
+    maxAdvancementCost: Int
+    trashCost: Int
+    minTrashCost: Int
+    maxTrashCost: Int
+    uniqueness: Boolean
+    quantity: Int
+    minQuantity: Int
+    maxQuantity: Int
+    titleIncludes: String
+    type: String
+    pack: String
+    faction: String
+    side: String
   }
 `;
 
 const CardInterfaceFields = `
-    code: String!
-    faction: Faction!
-    flavor: String
-    illustrator: String
-    keywords: String
-    pack: Pack!
-    position: Int!
-    quantity: Int!
-    side: Side!
-    text: String
-    title: String!
-    type: Type!
-    uniqueness: Boolean!
+  code: String!
+  faction: Faction!
+  flavor: String
+  illustrator: String
+  keywords: String
+  pack: Pack!
+  position: Int!
+  quantity: Int!
+  side: Side!
+  text: String
+  title: String!
+  type: Type!
+  uniqueness: Boolean!
 `;
 
 const CardInterface = `
@@ -180,7 +215,7 @@ const QueryType = `
     type(code: String, isSubtype: Boolean, nameIncludes: String): Type
     types: [Type]
     card(code: String!): ICard
-    cards(titleIncludes: String): [ICard]
+    cards(filter: FilterCards): [ICard]
     pack(code: String!): Pack
     packs(nameIncludes: String): [Pack]
     faction(code: String!): Faction
@@ -189,6 +224,8 @@ const QueryType = `
 `;
 
 exports.typeDefs = `
+  ${FilterCardsInput}
+
   ${SideType}
   ${TypeType}
   ${PackType}
