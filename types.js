@@ -53,8 +53,7 @@ const FactionType = `
   }
 `;
 
-const CardInterface = `
-  interface ICard {
+const CardInterfaceFields = `
     code: String!
     faction: Faction!
     flavor: String
@@ -68,11 +67,17 @@ const CardInterface = `
     title: String!
     type: Type!
     uniqueness: Boolean!
+`;
+
+const CardInterface = `
+  interface ICard {
+    ${CardInterfaceFields}
   }
 `;
 
 const AgendaType = `
   type Agenda implements ICard {
+    ${CardInterfaceFields}
     advancementCost: Int!
     agendaPoints: Int!
     deckLimit: Int!
@@ -80,6 +85,7 @@ const AgendaType = `
 `;
 const AssetType = `
   type Asset implements ICard {
+    ${CardInterfaceFields}
     cost: Int!
     factionCost: Int!
     deckLimit: Int!
@@ -88,6 +94,7 @@ const AssetType = `
 `;
 const EventType = `
   type Event implements ICard {
+    ${CardInterfaceFields}
     cost: Int!
     factionCost: Int!
     deckLimit: Int!
@@ -95,6 +102,7 @@ const EventType = `
 `;
 const HardwareType = `
   type Hardware implements ICard {
+    ${CardInterfaceFields}
     cost: Int!
     factionCost: Int!
     deckLimit: Int!
@@ -102,6 +110,7 @@ const HardwareType = `
 `;
 const IceType = `
   type Ice implements ICard {
+    ${CardInterfaceFields}
     cost: Int!
     factionCost: Int!
     deckLimit: Int!
@@ -111,6 +120,7 @@ const IceType = `
 `;
 const IcebreakerType = `
   type Icebreaker implements ICard {
+    ${CardInterfaceFields}
     cost: Int!
     factionCost: Int!
     deckLimit: Int!
@@ -119,6 +129,7 @@ const IcebreakerType = `
 `;
 const IdentityType = `
   type Identity implements ICard {
+    ${CardInterfaceFields}
     baseLink: Int
     influenceLimit: Int!
     minimumDeckSize: Int!
@@ -126,6 +137,7 @@ const IdentityType = `
 `;
 const OperationType = `
   type Operation implements ICard {
+    ${CardInterfaceFields}
     cost: Int!
     factionCost: Int!
     deckLimit: Int!
@@ -134,6 +146,7 @@ const OperationType = `
 `;
 const ProgramType = `
   type Program implements ICard {
+    ${CardInterfaceFields}
     cost: Int!
     memoryCost: Int!
     factionCost: Int!
@@ -142,6 +155,7 @@ const ProgramType = `
 `;
 const ResourceType = `
   type Resource implements ICard {
+    ${CardInterfaceFields}
     cost: Int!
     factionCost: Int!
     deckLimit: Int!
@@ -149,6 +163,7 @@ const ResourceType = `
 `;
 const UpgradeType = `
   type Upgrade implements ICard {
+    ${CardInterfaceFields}
     cost: Int!
     factionCost: Int!
     deckLimit: Int!
