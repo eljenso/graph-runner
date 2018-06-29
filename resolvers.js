@@ -56,7 +56,7 @@ function filterCards({
   pack,
   faction,
   side
-}) {
+} = {}) {
   let filteredCards = ALL_CARDS;
   if (code) {
     return filteredCards.filter(card => card.code === code);
