@@ -336,7 +336,7 @@ exports.resolvers = {
       filterFactions({ code, nameIncludes, isMini })
   },
   ICard: {
-    __resolveType: (card, context, info) => {
+    __resolveType: card => {
       switch (card.type_code) {
         case "identity":
           return "Identity";
@@ -364,9 +364,6 @@ exports.resolvers = {
 
         case "operation":
           return "Operation";
-
-        case "icebreaker":
-          return "Icebreaker";
 
         case "program":
           return "Program";
