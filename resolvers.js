@@ -2,8 +2,12 @@ const moment = require("moment");
 
 const SIDES = require("./netrunner-cards-json/sides.json");
 const TYPES = require("./netrunner-cards-json/types.json");
-const CYCLES = require("./netrunner-cards-json/cycles.json");
-const PACKS = require("./netrunner-cards-json/packs.json");
+const CYCLES = require("./netrunner-cards-json/cycles.json").sort(
+  (cycleA, cycleB) => (cycleA.position <= cycleB.position ? -1 : 1)
+);
+const PACKS = require("./netrunner-cards-json/packs.json").sort(
+  (packA, packB) => (packA.date_release <= packB.date_release ? -1 : 1)
+);
 const FACTIONS = require("./netrunner-cards-json/factions.json");
 
 const { ALL_CARDS } = require("./cards");
@@ -64,6 +68,7 @@ function filterCards({
   faction,
   side
 } = {}) {
+  //TODO: Allow sorting by whatever
   let filteredCards = ALL_CARDS;
   if (code) {
     return filteredCards.filter(card => card.code === code);
@@ -312,7 +317,6 @@ function filterPacks({
       )
     );
   }
-  //TODO: release date
   return filteredPacks;
 }
 
@@ -539,5 +543,8 @@ exports.resolvers = {
     },
     factions: (_, { nameIncludes, isMini }) =>
       filterFactions({ nameIncludes, isMini })
+    //TODO: Add rotations
+    //TODO: Add WM decks
+    //TODO: Add MWL
   }
 };
