@@ -9,7 +9,12 @@ const { ALL_CARDS } = require("./cards");
 function filterFactions({ code, sideCode, nameIncludes = "", isMini }) {
   let filteredFactions = FACTIONS;
   if (code) {
-    return filteredFactions.filter(faction => faction.side_code === sideCode);
+    return filteredFactions.filter(faction => faction.code === code);
+  }
+  if (sideCode) {
+    filteredFactions = filteredFactions.filter(
+      faction => faction.side_code === sideCode
+    );
   }
   if (typeof isMini === "boolean") {
     filteredFactions = filteredFactions.filter(
