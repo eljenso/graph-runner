@@ -251,7 +251,7 @@ function filterTypes({ code, isSubtype, nameIncludes, sideCode }) {
   return filteredTypes;
 }
 
-function filterCycles({ code, nameIncludes }) {
+function filterCycles({ code, nameIncludes, isRotated, includeDraft = false }) {
   let filteredCycles = CYCLES;
   if (code) {
     return filteredCycles.filter(cycle => cycle.code === code);
@@ -260,6 +260,14 @@ function filterCycles({ code, nameIncludes }) {
     filteredCycles = filteredCycles.filter(cycle =>
       cycle.name.toLowerCase().includes(nameIncludes.toLowerCase())
     );
+  }
+  if (typeof isRotated === "boolean") {
+    filteredCycles = filteredCycles.filter(
+      cycle => cycle.rotated === isRotated
+    );
+  }
+  if (!includeDraft) {
+    filteredCycles = filteredCycles.filter(cycle => cycle.code !== "draft");
   }
   return filteredCycles;
 }
@@ -314,7 +322,7 @@ exports.resolvers = {
     cards: ({ code }, { filter }) => filterCards({ type: code, ...filter }),
     isSubtype: type => type.is_subtype,
     side: ({ side_code }) => {
-      let side = filterTypes({ code: side_code });
+      let side = filterSides({ code: side_code });
       return side ? side[0] : null;
     }
   },
@@ -328,7 +336,8 @@ exports.resolvers = {
     cards: ({ code }, { filter }) => filterCards({ pack: code, ...filter })
   },
   Cycle: {
-    packs: ({ code }) => filterPacks({ cycleCode: code })
+    packs: ({ code, nameIncludes }) =>
+      filterPacks({ cycleCode: code, nameIncludes })
   },
   Faction: {
     cards: ({ code }, { filter }) => filterCards({ faction: code, ...filter }),
@@ -451,11 +460,12 @@ exports.resolvers = {
       return side ? side[0] : null;
     },
     sides: (_, { nameIncludes }) => filterSides({ nameIncludes }),
-    type: (_, { code, isSubtype, nameIncludes }) => {
-      const type = filterTypes({ code, isSubtype, nameIncludes });
+    type: (_, { code }) => {
+      const type = filterTypes({ code });
       return type ? type[0] : null;
     },
-    types: () => TYPES,
+    types: (_, { isSubtype, nameIncludes }) =>
+      filterTypes({ isSubtype, nameIncludes }),
     card: (_, { code }) => {
       const card = filterCards({ code });
       return card ? card[0] : null;
@@ -474,7 +484,8 @@ exports.resolvers = {
       const cycle = filterCycles({ code });
       return cycle ? cycle[0] : null;
     },
-    cycles: (_, { nameIncludes }) => filterCycles({ nameIncludes }),
+    cycles: (_, { nameIncludes, isRotated, includeDraft }) =>
+      filterCycles({ nameIncludes, isRotated, includeDraft }),
     faction: (_, { code }) => {
       const faction = filterFactions({ code });
       return faction ? faction[0] : null;

@@ -1,24 +1,47 @@
+const FIELDS = {
+  Cards: "cards(filter: FilterCards): [ICard!]!",
+  Factions: "factions(nameIncludes: String, isMini: Boolean): [Faction]"
+};
+
 const SideType = `
+  "Sides in the game (either Corp or Runner)"
   type Side {
     code: String!
     name: String!
-    factions(nameIncludes: String, isMini: Boolean): [Faction]
-    cards(filter: FilterCards): [ICard]
+    "All factions of a side"
+    ${FIELDS.Factions}
+    "All cards of a side"
+    ${FIELDS.Cards}
   }
 `;
 
 const TypeType = `
+  "All the different card types (including subtypes)"
   type Type {
     code: String!
     isSubtype: Boolean
     name: String!
     position: Int
     side: Side!
-    cards(filter: FilterCards): [ICard]
+    "All cards having this (sub)type"
+    ${FIELDS.Cards}
+  }
+`;
+
+const CycleType = `
+  "Set of packs. By default does not include 'draft'."
+  type Cycle {
+    code: String!
+    name: String!
+    position: String!
+    rotated: Boolean
+    size: Int!
+    packs(nameIncludes: String): [Pack!]!
   }
 `;
 
 const PackType = `
+  "By default does not include 'draft'."
   type Pack {
     code: String!
     cycle: Cycle!
@@ -27,33 +50,27 @@ const PackType = `
     name: String!
     position: Int!
     size: Int!
-    cards(filter: FilterCards): [ICard!]!
-  }
-`;
-
-const CycleType = `
-  type Cycle {
-    code: String!
-    name: String!
-    position: String!
-    rotated: Boolean
-    size: Int!
-    packs: [Pack!]!
+    ${FIELDS.Cards}
   }
 `;
 
 const FactionType = `
   type Faction {
     code: String!
+    "The primary color a faction"
     color: String
     isMini: Boolean
     name: String!
     side: Side!
-    cards(filter: FilterCards): [ICard!]!
+    ${FIELDS.Cards}
   }
 `;
 
 const FilterCardsInput = `
+  """
+  Object for filterting cards.
+  Was implemented because there are many attributes on each card.
+  """
   input FilterCards {
     textIncludes: String
     flavorIncludes: String
@@ -105,6 +122,7 @@ const CardInterfaceFields = `
 `;
 
 const CardInterface = `
+  "Common card interface which has all common attributes shared across all card types."
   interface ICard {
     ${CardInterfaceFields}
   }
@@ -208,18 +226,41 @@ const UpgradeType = `
 
 const QueryType = `
   type Query {
+    "Get single cycle by code"
     cycle(code: String!): Cycle
-    cycles(nameIncludes: String): [Cycle]
+
+    "Get cycles by filters"
+    cycles(nameIncludes: String, isRotated: Boolean, includeDraft: Boolean): [Cycle!]!
+
+    "Get single side by code"
     side(code: String!): Side
-    sides(nameIncludes: String): [Side]
-    type(code: String, isSubtype: Boolean, nameIncludes: String): Type
-    types: [Type]
+
+    "Get sides by filters"
+    sides(nameIncludes: String): [Side!]!
+
+    "Get single type by code"
+    type(code: String!): Type
+
+    "Get sides by filters"
+    types(isSubtype: Boolean, nameIncludes: String): [Type!]!
+
+    "Get single card by code"
     card(code: String!): ICard
-    cards(filter: FilterCards): [ICard]
+
+    "Get cards by filters"
+    ${FIELDS.Cards}
+
+    "Get single pack by code"
     pack(code: String!): Pack
-    packs(nameIncludes: String): [Pack]
+
+    "Get packs by filters"
+    packs(nameIncludes: String, includeDraft: Boolean): [Pack!]!
+
+    "Get single faction by code"
     faction(code: String!): Faction
-    factions(nameIncludes: String, isMini: Boolean): [Faction]
+
+    "Get factions by filters"
+    ${FIELDS.Factions}
   }
 `;
 
