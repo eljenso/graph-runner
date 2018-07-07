@@ -1,6 +1,17 @@
 const FIELDS = {
   Cards: "cards(filter: FilterCards): [ICard!]!",
-  Factions: "factions(nameIncludes: String, isMini: Boolean): [Faction]"
+  Factions: "factions(nameIncludes: String, isMini: Boolean): [Faction]",
+  Packs: `
+    packs(
+      nameIncludes: String,
+      "Only include packs released after or on this date. Must be of format 'YYYY-MM-DD', e.g. 2014-02-21"
+      releasedAfter: String,
+      "Only include packs released before or on this date. Must be of format 'YYYY-MM-DD', e.g. 2014-02-21"
+      releasedBefore: String,
+      "Whether to include draft pack or not (default is false)"
+      includeDraft: Boolean = false
+    ): [Pack!]!
+  `
 };
 
 const SideType = `
@@ -36,7 +47,7 @@ const CycleType = `
     position: String!
     rotated: Boolean
     size: Int!
-    packs(nameIncludes: String): [Pack!]!
+    ${FIELDS.Packs}
   }
 `;
 
@@ -230,7 +241,12 @@ const QueryType = `
     cycle(code: String!): Cycle
 
     "Get cycles by filters"
-    cycles(nameIncludes: String, isRotated: Boolean, includeDraft: Boolean): [Cycle!]!
+    cycles(
+      nameIncludes: String,
+      isRotated: Boolean,
+      "Whether to include draft cycle or not (default is false)"
+      includeDraft: Boolean = false
+    ): [Cycle!]!
 
     "Get single side by code"
     side(code: String!): Side
@@ -254,7 +270,7 @@ const QueryType = `
     pack(code: String!): Pack
 
     "Get packs by filters"
-    packs(nameIncludes: String, includeDraft: Boolean): [Pack!]!
+    ${FIELDS.Packs}
 
     "Get single faction by code"
     faction(code: String!): Faction

@@ -1,3 +1,5 @@
+const moment = require("moment");
+
 const SIDES = require("./netrunner-cards-json/sides.json");
 const TYPES = require("./netrunner-cards-json/types.json");
 const CYCLES = require("./netrunner-cards-json/cycles.json");
@@ -251,7 +253,7 @@ function filterTypes({ code, isSubtype, nameIncludes, sideCode }) {
   return filteredTypes;
 }
 
-function filterCycles({ code, nameIncludes, isRotated, includeDraft = false }) {
+function filterCycles({ code, nameIncludes, isRotated, includeDraft }) {
   let filteredCycles = CYCLES;
   if (code) {
     return filteredCycles.filter(cycle => cycle.code === code);
@@ -272,7 +274,15 @@ function filterCycles({ code, nameIncludes, isRotated, includeDraft = false }) {
   return filteredCycles;
 }
 
-function filterPacks({ code, nameIncludes, cycleCode }) {
+function filterPacks({
+  code,
+  nameIncludes,
+  cycleCode,
+  includeDraft,
+  releasedAfter,
+  releasedBefore
+}) {
+  const dateFormat = "YYYY-MM-DD";
   let filteredPacks = PACKS;
   if (code) {
     return filteredPacks.filter(pack => pack.code === code);
@@ -284,6 +294,23 @@ function filterPacks({ code, nameIncludes, cycleCode }) {
   }
   if (cycleCode) {
     filteredPacks = filteredPacks.filter(pack => pack.cycle_code === cycleCode);
+  }
+  if (!includeDraft) {
+    filteredPacks = filteredPacks.filter(pack => pack.code !== "draft");
+  }
+  if (releasedAfter) {
+    filteredPacks = filteredPacks.filter(pack =>
+      moment(pack.date_release, dateFormat).isSameOrAfter(
+        moment(releasedAfter, dateFormat)
+      )
+    );
+  }
+  if (releasedBefore) {
+    filteredPacks = filteredPacks.filter(pack =>
+      moment(pack.date_release, dateFormat).isSameOrBefore(
+        moment(releasedBefore, dateFormat)
+      )
+    );
   }
   //TODO: release date
   return filteredPacks;
@@ -336,8 +363,20 @@ exports.resolvers = {
     cards: ({ code }, { filter }) => filterCards({ pack: code, ...filter })
   },
   Cycle: {
-    packs: ({ code, nameIncludes }) =>
-      filterPacks({ cycleCode: code, nameIncludes })
+    packs: ({
+      code,
+      nameIncludes,
+      includeDraft,
+      releasedAfter,
+      releasedBefore
+    }) =>
+      filterPacks({
+        cycleCode: code,
+        nameIncludes,
+        includeDraft,
+        releasedAfter,
+        releasedBefore
+      })
   },
   Faction: {
     cards: ({ code }, { filter }) => filterCards({ faction: code, ...filter }),
@@ -477,8 +516,16 @@ exports.resolvers = {
       const pack = filterPacks({ code });
       return pack ? pack[0] : null;
     },
-    packs: (_, { nameIncludes }) => {
-      return filterPacks({ nameIncludes });
+    packs: (
+      _,
+      { nameIncludes, includeDraft, releasedAfter, releasedBefore }
+    ) => {
+      return filterPacks({
+        nameIncludes,
+        includeDraft,
+        releasedAfter,
+        releasedBefore
+      });
     },
     cycle: (_, { code }) => {
       const cycle = filterCycles({ code });

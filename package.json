@@ -16,7 +16,8 @@
   "license": "ISC",
   "dependencies": {
     "apollo-server": "^2.0.0-rc.5",
-    "graphql": "^0.13.2"
+    "graphql": "^0.13.2",
+    "moment": "^2.22.2"
   },
   "devDependencies": {
     "eslint": "^5.0.1",
