@@ -6,10 +6,10 @@ const FACTIONS = require("./netrunner-cards-json/factions.json");
 
 const { ALL_CARDS } = require("./cards");
 
-function filterFactions({ code, nameIncludes = "", isMini }) {
+function filterFactions({ code, sideCode, nameIncludes = "", isMini }) {
   let filteredFactions = FACTIONS;
   if (code) {
-    return filteredFactions.filter(faction => faction.code === code);
+    return filteredFactions.filter(faction => faction.side_code === sideCode);
   }
   if (typeof isMini === "boolean") {
     filteredFactions = filteredFactions.filter(
@@ -333,7 +333,7 @@ exports.resolvers = {
   Side: {
     cards: ({ code }, { filter }) => filterCards({ side: code, ...filter }),
     factions: ({ code }, { nameIncludes, isMini }) =>
-      filterFactions({ code, nameIncludes, isMini })
+      filterFactions({ sideCode: code, nameIncludes, isMini })
   },
   ICard: {
     __resolveType: card => {
