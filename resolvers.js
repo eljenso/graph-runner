@@ -11,6 +11,7 @@ const PACKS = require("./netrunner-cards-json/packs.json").sort(
 const FACTIONS = require("./netrunner-cards-json/factions.json");
 const ROTATIONS = require("./netrunner-cards-json/rotations.json");
 const MWL = require("./netrunner-cards-json/mwl.json");
+const PREBUILTS = require("./netrunner-cards-json/prebuilts.json");
 
 const { ALL_CARDS } = require("./cards");
 
@@ -358,19 +359,35 @@ function filterMWLs({ code, nameIncludes, startedAfter }) {
   let filteredMWLs = MWL;
 
   if (nameIncludes) {
-    filteredMWLs = filteredMWLs.filter(rotation =>
-      rotation.name.toLowerCase().includes(nameIncludes.toLowerCase())
+    filteredMWLs = filteredMWLs.filter(mwl =>
+      mwl.name.toLowerCase().includes(nameIncludes.toLowerCase())
     );
   }
   if (startedAfter) {
-    filteredMWLs = filteredMWLs.filter(rotation =>
-      moment(rotation.date_start, DATE_FORMAT).isSameOrAfter(
+    filteredMWLs = filteredMWLs.filter(mwl =>
+      moment(mwl.date_start, DATE_FORMAT).isSameOrAfter(
         moment(startedAfter, DATE_FORMAT)
       )
     );
   }
 
   return filteredMWLs;
+}
+
+function filterPrebuilts({ code, nameIncludes }) {
+  if (code) {
+    return PREBUILTS.filter(prebuilt => prebuilt.code === code);
+  }
+
+  let filteredPrebuilts = PREBUILTS;
+
+  if (nameIncludes) {
+    filteredPrebuilts = filteredPrebuilts.filter(prebuilt =>
+      prebuilt.name.toLowerCase().includes(nameIncludes.toLowerCase())
+    );
+  }
+
+  return filteredPrebuilts;
 }
 
 const CardResolvers = {
@@ -473,6 +490,28 @@ exports.resolvers = {
     universalFactionCost: mwlenty => mwlenty.universal_faction_cost,
     isRestricted: mwlenty => mwlenty.is_restricted,
     deckLimit: mwlenty => mwlenty.deck_limit
+  },
+  Prebuilt: {
+    cards: ({ cards }) => {
+      const prebuiltCards = [];
+      for (const cardCode in cards) {
+        if (cards.hasOwnProperty(cardCode)) {
+          const quantity = cards[cardCode];
+          prebuiltCards.push({
+            card: cardCode,
+            quantity
+          });
+        }
+      }
+      return prebuiltCards;
+    },
+    dateReleased: prebuilt => prebuilt.date_release
+  },
+  PrebuiltCard: {
+    card: ({ card: code }) => {
+      const card = filterCards({ code });
+      return card ? card[0] : null;
+    }
   },
   ICard: {
     __resolveType: card => {
@@ -636,8 +675,11 @@ exports.resolvers = {
       return mwl ? mwl[0] : null;
     },
     mwls: (_, { nameIncludes, startedAfter }) =>
-      filterMWLs({ nameIncludes, startedAfter })
-
-    //TODO: Add WM decks
+      filterMWLs({ nameIncludes, startedAfter }),
+    prebuilt: (_, { code }) => {
+      const prebuilt = filterPrebuilts({ code });
+      return prebuilt ? prebuilt[0] : null;
+    },
+    prebuilts: (_, { nameIncludes }) => filterPrebuilts({ nameIncludes })
   }
 };

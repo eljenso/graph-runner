@@ -261,6 +261,21 @@ const MWLType = `
   }
 `;
 
+const PrebuiltType = `
+  type PrebuiltCard {
+    card: ICard!
+    quantity: Int!
+  }
+
+  type Prebuilt {
+    code: String!
+    dateReleased: String!
+    name: String!
+    position: Int!
+    cards: [PrebuiltCard!]!
+  }
+`;
+
 const QueryType = `
   type Query {
     "Get single cycle by code"
@@ -307,14 +322,14 @@ const QueryType = `
     "Get rotation by code"
     rotation(code: String!): Rotation
 
-    "Get rotation by filters"
+    "Get single rotation by filters"
     rotations(
       nameIncludes: String,
       startedAfter: String,
       includesCycle: String
     ): [Rotation!]!
 
-    "Get MWL version by code"
+    "Get single MWL version by code"
     mwl(code: String!): MWL
 
     "Get MWL by filters"
@@ -322,6 +337,12 @@ const QueryType = `
       nameIncludes: String,
       startedAfter: String
     ): [MWL!]!
+
+    "Get single prebuilt deck by code"
+    prebuilt(code: String!): Prebuilt
+
+    "Get prebuilt decks by filter"
+    prebuilts(nameIncludes: String): [Prebuilt!]!
   }
 `;
 
@@ -349,6 +370,7 @@ exports.typeDefs = `
 
   ${RotationType}
   ${MWLType}
+  ${PrebuiltType}
 
   ${QueryType}
 `;
