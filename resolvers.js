@@ -10,6 +10,7 @@ const PACKS = require("./netrunner-cards-json/packs.json").sort(
 );
 const FACTIONS = require("./netrunner-cards-json/factions.json");
 const ROTATIONS = require("./netrunner-cards-json/rotations.json");
+const MWL = require("./netrunner-cards-json/mwl.json");
 
 const { ALL_CARDS } = require("./cards");
 
@@ -350,6 +351,28 @@ function filterRotations({ code, nameIncludes, startedAfter, includesCycle }) {
   return filteredRotations;
 }
 
+function filterMWLs({ code, nameIncludes, startedAfter }) {
+  if (code) {
+    return MWL.filter(mwl => mwl.code === code);
+  }
+  let filteredMWLs = MWL;
+
+  if (nameIncludes) {
+    filteredMWLs = filteredMWLs.filter(rotation =>
+      rotation.name.toLowerCase().includes(nameIncludes.toLowerCase())
+    );
+  }
+  if (startedAfter) {
+    filteredMWLs = filteredMWLs.filter(rotation =>
+      moment(rotation.date_start, DATE_FORMAT).isSameOrAfter(
+        moment(startedAfter, DATE_FORMAT)
+      )
+    );
+  }
+
+  return filteredMWLs;
+}
+
 const CardResolvers = {
   baseLink: card => card.base_link,
   deckLimit: card => card.deck_limit,
@@ -426,6 +449,30 @@ exports.resolvers = {
       });
     },
     dateStart: rotation => rotation.date_start
+  },
+  MWL: {
+    cards: ({ cards: cardCodes }) => {
+      const cards = [];
+      for (const cardCode in cardCodes) {
+        if (cardCodes.hasOwnProperty(cardCode)) {
+          const card = cardCodes[cardCode];
+          card.code = cardCode;
+          cards.push(card);
+        }
+      }
+      return cards;
+    },
+    dateStart: mwl => mwl.date_start
+  },
+  MWLEntry: {
+    card: ({ code }) => {
+      const card = filterCards({ code });
+      return card ? card[0] : null;
+    },
+    globalPenalty: mwlenty => mwlenty.global_penalty,
+    universalFactionCost: mwlenty => mwlenty.universal_faction_cost,
+    isRestricted: mwlenty => mwlenty.is_restricted,
+    deckLimit: mwlenty => mwlenty.deck_limit
   },
   ICard: {
     __resolveType: card => {
@@ -582,10 +629,15 @@ exports.resolvers = {
       const rotation = filterRotations({ code });
       return rotation ? rotation[0] : null;
     },
-    rotations: (_, { nameIncludes, startedAfter, activeAt, includesCycle }) =>
-      filterRotations({ nameIncludes, startedAfter, activeAt, includesCycle })
+    rotations: (_, { nameIncludes, startedAfter, includesCycle }) =>
+      filterRotations({ nameIncludes, startedAfter, includesCycle }),
+    mwl: (_, { code }) => {
+      const mwl = filterMWLs({ code });
+      return mwl ? mwl[0] : null;
+    },
+    mwls: (_, { nameIncludes, startedAfter }) =>
+      filterMWLs({ nameIncludes, startedAfter })
 
     //TODO: Add WM decks
-    //TODO: Add MWL
   }
 };

@@ -244,6 +244,23 @@ const RotationType = `
   }
 `;
 
+const MWLType = `
+  type MWLEntry {
+    card: ICard!
+    globalPenalty: Int
+    universalFactionCost: Int
+    isRestricted: Int
+    deckLimit: Int
+  }
+
+  type MWL {
+    code: String!
+    cards: [MWLEntry!]!
+    name: String!
+    dateStart: String!
+  }
+`;
+
 const QueryType = `
   type Query {
     "Get single cycle by code"
@@ -294,9 +311,17 @@ const QueryType = `
     rotations(
       nameIncludes: String,
       startedAfter: String,
-      activeAt: String,
       includesCycle: String
     ): [Rotation!]!
+
+    "Get MWL version by code"
+    mwl(code: String!): MWL
+
+    "Get MWL by filters"
+    mwls(
+      nameIncludes: String,
+      startedAfter: String
+    ): [MWL!]!
   }
 `;
 
@@ -323,6 +348,7 @@ exports.typeDefs = `
   ${UpgradeType}
 
   ${RotationType}
+  ${MWLType}
 
   ${QueryType}
 `;
