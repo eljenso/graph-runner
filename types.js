@@ -235,6 +235,15 @@ const UpgradeType = `
   }
 `;
 
+const RotationType = `
+  type Rotation {
+    code: String!
+    cycles: [Cycle!]!
+    name: String!
+    dateStart: String!
+  }
+`;
+
 const QueryType = `
   type Query {
     "Get single cycle by code"
@@ -277,6 +286,17 @@ const QueryType = `
 
     "Get factions by filters"
     ${FIELDS.Factions}
+
+    "Get rotation by code"
+    rotation(code: String!): Rotation
+
+    "Get rotation by filters"
+    rotations(
+      nameIncludes: String,
+      startedAfter: String,
+      activeAt: String,
+      includesCycle: String
+    ): [Rotation!]!
   }
 `;
 
@@ -301,6 +321,8 @@ exports.typeDefs = `
   ${ResourceType}
   ${ProgramType}
   ${UpgradeType}
+
+  ${RotationType}
 
   ${QueryType}
 `;

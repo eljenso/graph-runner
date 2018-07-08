@@ -9,8 +9,11 @@ const PACKS = require("./netrunner-cards-json/packs.json").sort(
   (packA, packB) => (packA.date_release <= packB.date_release ? -1 : 1)
 );
 const FACTIONS = require("./netrunner-cards-json/factions.json");
+const ROTATIONS = require("./netrunner-cards-json/rotations.json");
 
 const { ALL_CARDS } = require("./cards");
+
+const DATE_FORMAT = "YYYY-MM-DD";
 
 function filterFactions({ code, sideCode, nameIncludes = "", isMini }) {
   let filteredFactions = FACTIONS;
@@ -287,7 +290,6 @@ function filterPacks({
   releasedAfter,
   releasedBefore
 }) {
-  const dateFormat = "YYYY-MM-DD";
   let filteredPacks = PACKS;
   if (code) {
     return filteredPacks.filter(pack => pack.code === code);
@@ -305,19 +307,47 @@ function filterPacks({
   }
   if (releasedAfter) {
     filteredPacks = filteredPacks.filter(pack =>
-      moment(pack.date_release, dateFormat).isSameOrAfter(
-        moment(releasedAfter, dateFormat)
+      moment(pack.date_release, DATE_FORMAT).isSameOrAfter(
+        moment(releasedAfter, DATE_FORMAT)
       )
     );
   }
   if (releasedBefore) {
     filteredPacks = filteredPacks.filter(pack =>
-      moment(pack.date_release, dateFormat).isSameOrBefore(
-        moment(releasedBefore, dateFormat)
+      moment(pack.date_release, DATE_FORMAT).isSameOrBefore(
+        moment(releasedBefore, DATE_FORMAT)
       )
     );
   }
   return filteredPacks;
+}
+
+function filterRotations({ code, nameIncludes, startedAfter, includesCycle }) {
+  let filteredRotations = ROTATIONS;
+
+  if (code) {
+    return filteredRotations.filter(rotation => rotation.code === code);
+  }
+
+  if (nameIncludes) {
+    filteredRotations = filteredRotations.filter(rotation =>
+      rotation.name.toLowerCase().includes(nameIncludes.toLowerCase())
+    );
+  }
+  if (startedAfter) {
+    filteredRotations = filteredRotations.filter(rotation =>
+      moment(rotation.date_start, DATE_FORMAT).isSameOrAfter(
+        moment(startedAfter, DATE_FORMAT)
+      )
+    );
+  }
+  if (includesCycle) {
+    filteredRotations = filteredRotations.filter(rotation =>
+      rotation.cycles.includes(includesCycle)
+    );
+  }
+
+  return filteredRotations;
 }
 
 const CardResolvers = {
@@ -388,6 +418,14 @@ exports.resolvers = {
     cards: ({ code }, { filter }) => filterCards({ side: code, ...filter }),
     factions: ({ code }, { nameIncludes, isMini }) =>
       filterFactions({ sideCode: code, nameIncludes, isMini })
+  },
+  Rotation: {
+    cycles: ({ cycles: cycleCodes }) => {
+      return CYCLES.filter(cycle => {
+        return cycleCodes.includes(cycle.code);
+      });
+    },
+    dateStart: rotation => rotation.date_start
   },
   ICard: {
     __resolveType: card => {
@@ -539,8 +577,14 @@ exports.resolvers = {
       return faction ? faction[0] : null;
     },
     factions: (_, { nameIncludes, isMini }) =>
-      filterFactions({ nameIncludes, isMini })
-    //TODO: Add rotations
+      filterFactions({ nameIncludes, isMini }),
+    rotation: (_, { code }) => {
+      const rotation = filterRotations({ code });
+      return rotation ? rotation[0] : null;
+    },
+    rotations: (_, { nameIncludes, startedAfter, activeAt, includesCycle }) =>
+      filterRotations({ nameIncludes, startedAfter, activeAt, includesCycle })
+
     //TODO: Add WM decks
     //TODO: Add MWL
   }
