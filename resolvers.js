@@ -367,13 +367,10 @@ exports.resolvers = {
     cards: ({ code }, { filter }) => filterCards({ pack: code, ...filter })
   },
   Cycle: {
-    packs: ({
-      code,
-      nameIncludes,
-      includeDraft,
-      releasedAfter,
-      releasedBefore
-    }) =>
+    packs: (
+      { code },
+      { nameIncludes, includeDraft, releasedAfter, releasedBefore }
+    ) =>
       filterPacks({
         cycleCode: code,
         nameIncludes,
